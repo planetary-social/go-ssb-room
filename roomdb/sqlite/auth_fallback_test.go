@@ -29,7 +29,7 @@ func TestFallbackAuth(t *testing.T) {
 	// fake feed for testing, looks ok at least
 	newMember := refs.FeedRef{ID: bytes.Repeat([]byte("acab"), 8), Algo: refs.RefAlgoFeedSSB1}
 
-	db, err := Open(tr)
+	db, err := Open(tr, nil)
 	r.NoError(err, "failed to open database")
 
 	memberID, err := db.Members.Add(ctx, newMember, roomdb.RoleMember)
@@ -76,7 +76,7 @@ func TestFallbackAuthSetPassword(t *testing.T) {
 	// fake feed for testing, looks ok at least
 	newMember := refs.FeedRef{ID: bytes.Repeat([]byte("acab"), 8), Algo: refs.RefAlgoFeedSSB1}
 
-	db, err := Open(tr)
+	db, err := Open(tr, nil)
 	r.NoError(err, "failed to open database")
 
 	memberID, err := db.Members.Add(ctx, newMember, roomdb.RoleMember)
@@ -128,7 +128,7 @@ func TestFallbackAuthSetPasswordWithToken(t *testing.T) {
 	alf := refs.FeedRef{ID: bytes.Repeat([]byte("whyy"), 8), Algo: refs.RefAlgoFeedSSB1}
 	carl := refs.FeedRef{ID: bytes.Repeat([]byte("carl"), 8), Algo: refs.RefAlgoFeedSSB1}
 
-	db, err := Open(tr)
+	db, err := Open(tr, nil)
 	r.NoError(err, "failed to open database")
 
 	alfID, err := db.Members.Add(ctx, alf, roomdb.RoleModerator)

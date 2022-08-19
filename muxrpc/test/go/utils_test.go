@@ -105,7 +105,7 @@ func makeNamedTestBot(t testing.TB, name string, ctx context.Context, opts []roo
 	)
 
 	// could also use the mocks
-	db, err := sqlite.Open(repo.New(testPath))
+	db, err := sqlite.Open(repo.New(testPath), nil)
 	r.NoError(err)
 	t.Cleanup(func() {
 		if err := db.Close(); err != nil {
