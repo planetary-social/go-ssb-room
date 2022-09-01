@@ -49,7 +49,7 @@ type Database struct {
 }
 
 // Open looks for a database file 'fname'
-func Open(r repo.Interface, magicToken *string) (*Database, error) {
+func Open(r repo.Interface, bypassInvitesToken *string) (*Database, error) {
 	fname := r.GetPath("roomdb")
 
 	if dir := filepath.Dir(fname); dir != "" {
@@ -116,7 +116,7 @@ func Open(r repo.Interface, magicToken *string) (*Database, error) {
 		AuthWithSSB:   AuthWithSSB{db},
 		Config:        Config{db},
 		DeniedKeys:    DeniedKeys{db},
-		Invites:       Invites{db: db, members: ml, magicToken: magicToken},
+		Invites:       Invites{db: db, members: ml, bypassInvitesToken: bypassInvitesToken},
 		Notices:       Notices{db},
 		Members:       ml,
 		PinnedNotices: PinnedNotices{db},

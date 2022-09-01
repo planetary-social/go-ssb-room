@@ -151,7 +151,7 @@ func TestInvites(t *testing.T) {
 	})
 }
 
-func TestInvites_MagicToken(t *testing.T) {
+func TestInvites_BypassInvitestToken(t *testing.T) {
 	ctx := context.Background()
 
 	testRepo := filepath.Join("testrun", t.Name())
@@ -161,22 +161,22 @@ func TestInvites_MagicToken(t *testing.T) {
 	// fake feed for testing, looks ok at least
 	newMember := refs.FeedRef{ID: bytes.Repeat([]byte("acab"), 8), Algo: refs.RefAlgoFeedSSB1}
 
-	magicToken := "magic token"
+	token := "magic token"
 
-	db, err := Open(tr, &magicToken)
+	db, err := Open(tr, &token)
 	require.NoError(t, err)
 
-	t.Run("try to consume a magic token token", func(t *testing.T) {
+	t.Run("try to consume a magic token", func(t *testing.T) {
 		r := require.New(t)
 
 		lst, err := db.Invites.List(ctx)
-		r.NoError(err, "failed to get empty list of tokens")
+		r.NoError(err, "failed to list invites")
 		r.Len(lst, 0, "expected no active invites")
 
 		randToken := make([]byte, 32)
 		rand.Read(randToken)
 
-		_, err = db.Invites.Consume(ctx, magicToken, newMember)
-		r.NoError(err, "expected no error for magic token")
+		_, err = db.Invites.Consume(ctx, token, newMember)
+		r.NoError(err, "expected no error for bypass invites token")
 	})
 }

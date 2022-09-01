@@ -32,7 +32,7 @@ type Invites struct {
 
 	members Members
 
-	magicToken *string
+	bypassInvitesToken *string
 }
 
 // Create creates a new invite for a new member. It returns the token or an error.
@@ -115,7 +115,7 @@ func (i Invites) Consume(ctx context.Context, token string, newMember refs.FeedR
 	var inv roomdb.Invite
 
 	err := transact(i.db, func(tx *sql.Tx) error {
-		if !i.matchesMagicToken(token) {
+		if !i.matchesBypassInvitesToken(token) {
 			hashedToken, err := getHashedToken(token)
 			if err != nil {
 				return err
@@ -298,8 +298,8 @@ func (i Invites) Revoke(ctx context.Context, id int64) error {
 	})
 }
 
-func (i Invites) matchesMagicToken(token string) bool {
-	return i.magicToken != nil && token == *i.magicToken
+func (i Invites) matchesBypassInvitesToken(token string) bool {
+	return i.bypassInvitesToken != nil && token == *i.bypassInvitesToken
 }
 
 const inviteTokenLength = 50

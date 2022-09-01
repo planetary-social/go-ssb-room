@@ -60,7 +60,7 @@ var (
 
 	httpsDomain string
 
-	magicToken string
+	bypassInvitesToken string
 
 	aliasesAsSubdomains bool
 
@@ -108,7 +108,7 @@ func initFlags() {
 
 	flag.StringVar(&httpsDomain, "https-domain", "", "which domain to use for TLS and AllowedHosts checks")
 
-	flag.StringVar(&magicToken, "magic-token", "", "magic token which always allows the users to register")
+	flag.StringVar(&bypassInvitesToken, "bypass-invites-token", "", "magic token which always allows the users to register")
 
 	flag.BoolVar(&flagPrintVersion, "version", false, "print version number and build date")
 
@@ -241,7 +241,7 @@ func runroomsrv() error {
 	}
 
 	// open the sqlite version of the roomdb
-	db, err := sqlite.Open(r, magicTokenOrNil())
+	db, err := sqlite.Open(r, bypassInvitesTokenOrNil())
 	if err != nil {
 		return fmt.Errorf("failed to initiate database: %w", err)
 	}
@@ -447,9 +447,9 @@ func (limitByPathAndAddr) Key(r *http.Request) string {
 	return k.String()
 }
 
-func magicTokenOrNil() *string {
-	if magicToken == "" {
+func bypassInvitesTokenOrNil() *string {
+	if bypassInvitesToken == "" {
 		return nil
 	}
-	return &magicToken
+	return &bypassInvitesToken
 }
