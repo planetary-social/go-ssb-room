@@ -31,6 +31,8 @@ type Invites struct {
 	db *sql.DB
 
 	members Members
+
+	bypassInvitesToken *string
 }
 
 // Create creates a new invite for a new member. It returns the token or an error.
@@ -112,24 +114,37 @@ func (i Invites) Create(ctx context.Context, createdBy int64) (string, error) {
 func (i Invites) Consume(ctx context.Context, token string, newMember refs.FeedRef) (roomdb.Invite, error) {
 	var inv roomdb.Invite
 
-	hashedToken, err := getHashedToken(token)
-	if err != nil {
-		return inv, err
-	}
-
-	err = transact(i.db, func(tx *sql.Tx) error {
-		entry, err := models.Invites(
-			qm.Where("active = true AND hashed_token = ?", hashedToken),
-			qm.Load("CreatedByMember"),
-		).One(ctx, tx)
-		if err != nil {
-			if errors.Is(err, sql.ErrNoRows) {
-				return roomdb.ErrNotFound
+	err := transact(i.db, func(tx *sql.Tx) error {
+		if !i.matchesBypassInvitesToken(token) {
+			hashedToken, err := getHashedToken(token)
+			if err != nil {
+				return err
 			}
-			return err
+
+			entry, err := models.Invites(
+				qm.Where("active = true AND hashed_token = ?", hashedToken),
+				qm.Load("CreatedByMember"),
+			).One(ctx, tx)
+			if err != nil {
+				if errors.Is(err, sql.ErrNoRows) {
+					return roomdb.ErrNotFound
+				}
+				return err
+			}
+
+			entry.Active = false
+			_, err = entry.Update(ctx, tx, boil.Whitelist("active"))
+			if err != nil {
+				return err
+			}
+
+			inv.ID = entry.ID
+			inv.CreatedAt = entry.CreatedAt
+			inv.CreatedBy.ID = entry.R.CreatedByMember.ID
+			inv.CreatedBy.Role = roomdb.Role(entry.R.CreatedByMember.Role)
 		}
 
-		_, err = i.members.add(ctx, tx, newMember, roomdb.RoleMember)
+		_, err := i.members.add(ctx, tx, newMember, roomdb.RoleMember)
 		var alreadyAdded roomdb.ErrAlreadyAdded
 		if err != nil {
 			if errors.As(err, &alreadyAdded) && alreadyAdded.Ref.Equal(&newMember) {
@@ -138,18 +153,6 @@ func (i Invites) Consume(ctx context.Context, token string, newMember refs.FeedR
 				return err
 			}
 		}
-
-		// invalidate the invite for consumption
-		entry.Active = false
-		_, err = entry.Update(ctx, tx, boil.Whitelist("active"))
-		if err != nil {
-			return err
-		}
-
-		inv.ID = entry.ID
-		inv.CreatedAt = entry.CreatedAt
-		inv.CreatedBy.ID = entry.R.CreatedByMember.ID
-		inv.CreatedBy.Role = roomdb.Role(entry.R.CreatedByMember.Role)
 
 		return nil
 	})
@@ -293,6 +296,10 @@ func (i Invites) Revoke(ctx context.Context, id int64) error {
 
 		return nil
 	})
+}
+
+func (i Invites) matchesBypassInvitesToken(token string) bool {
+	return i.bypassInvitesToken != nil && token == *i.bypassInvitesToken
 }
 
 const inviteTokenLength = 50

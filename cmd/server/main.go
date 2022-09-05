@@ -60,6 +60,8 @@ var (
 
 	httpsDomain string
 
+	bypassInvitesToken string
+
 	aliasesAsSubdomains bool
 
 	listenAddrDebug string
@@ -105,6 +107,8 @@ func initFlags() {
 	flag.StringVar(&logToFile, "logs", "", "where to write debug output to (default is just stderr)")
 
 	flag.StringVar(&httpsDomain, "https-domain", "", "which domain to use for TLS and AllowedHosts checks")
+
+	flag.StringVar(&bypassInvitesToken, "bypass-invites-token", "", "magic token which always allows the users to register")
 
 	flag.BoolVar(&flagPrintVersion, "version", false, "print version number and build date")
 
@@ -237,7 +241,7 @@ func runroomsrv() error {
 	}
 
 	// open the sqlite version of the roomdb
-	db, err := sqlite.Open(r)
+	db, err := sqlite.Open(r, bypassInvitesTokenOrNil())
 	if err != nil {
 		return fmt.Errorf("failed to initiate database: %w", err)
 	}
@@ -441,4 +445,11 @@ func (limitByPathAndAddr) Key(r *http.Request) string {
 	k.WriteString(remoteIP)
 
 	return k.String()
+}
+
+func bypassInvitesTokenOrNil() *string {
+	if bypassInvitesToken == "" {
+		return nil
+	}
+	return &bypassInvitesToken
 }
