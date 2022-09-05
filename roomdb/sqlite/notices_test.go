@@ -26,7 +26,7 @@ func TestNoticesCRUD(t *testing.T) {
 
 	tr := repo.New(testRepo)
 
-	db, err := Open(tr)
+	db, err := Open(tr, nil)
 	r.NoError(err)
 
 	// boil.DebugWriter = os.Stderr
@@ -87,7 +87,7 @@ func TestPinnedNotices(t *testing.T) {
 
 	tr := repo.New(testRepo)
 
-	db, err := Open(tr)
+	db, err := Open(tr, nil)
 	r.NoError(err)
 
 	t.Run("defaults", func(t *testing.T) {

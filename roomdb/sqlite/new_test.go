@@ -22,7 +22,7 @@ func TestSchema(t *testing.T) {
 
 	tr := repo.New(testRepo)
 
-	db, err := Open(tr)
+	db, err := Open(tr, nil)
 	require.NoError(t, err)
 
 	err = db.Close()

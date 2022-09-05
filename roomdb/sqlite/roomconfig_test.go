@@ -25,7 +25,7 @@ func TestRoomConfig(t *testing.T) {
 
 	tr := repo.New(testRepo)
 
-	db, err := Open(tr)
+	db, err := Open(tr, nil)
 	r.NoError(err)
 
 	// make sure we have the expected default

@@ -37,7 +37,7 @@ func TestAliases(t *testing.T) {
 	testSig := make([]byte, 64)
 	rand.Read(testSig)
 
-	db, err := Open(tr)
+	db, err := Open(tr, nil)
 	require.NoError(t, err)
 
 	t.Run("not found", func(t *testing.T) {
@@ -111,7 +111,7 @@ func TestAliasesUniqueError(t *testing.T) {
 	os.RemoveAll(testRepo)
 	tr := repo.New(testRepo)
 
-	db, err := Open(tr)
+	db, err := Open(tr, nil)
 	r.NoError(err)
 
 	// fake feed for testing, looks ok at least

@@ -72,7 +72,7 @@ func main() {
 	}
 
 	r := repo.New(repoPath)
-	db, err := sqlite.Open(r)
+	db, err := sqlite.Open(r, nil)
 	check(err)
 	defer db.Close()
 

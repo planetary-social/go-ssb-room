@@ -28,7 +28,7 @@ func TestMembers(t *testing.T) {
 
 	tr := repo.New(testRepo)
 
-	db, err := Open(tr)
+	db, err := Open(tr, nil)
 	require.NoError(t, err)
 
 	// broken feed (unknown algo)
@@ -94,7 +94,7 @@ func TestMembersUnique(t *testing.T) {
 
 	tr := repo.New(testRepo)
 
-	db, err := Open(tr)
+	db, err := Open(tr, nil)
 	require.NoError(t, err)
 
 	feedA, err := refs.NewFeedRefFromBytes(bytes.Repeat([]byte("1312"), 8), refs.RefAlgoFeedSSB1)
@@ -123,7 +123,7 @@ func TestMembersByID(t *testing.T) {
 
 	tr := repo.New(testRepo)
 
-	db, err := Open(tr)
+	db, err := Open(tr, nil)
 	require.NoError(t, err)
 
 	feedA, err := refs.NewFeedRefFromBytes(bytes.Repeat([]byte("1312"), 8), refs.RefAlgoFeedSSB1)
@@ -165,7 +165,7 @@ func TestMembersSetRole(t *testing.T) {
 
 	tr := repo.New(testRepo)
 
-	db, err := Open(tr)
+	db, err := Open(tr, nil)
 	require.NoError(t, err)
 
 	// create two users
@@ -253,7 +253,7 @@ func TestMembersAliases(t *testing.T) {
 
 	tr := repo.New(testRepo)
 
-	db, err := Open(tr)
+	db, err := Open(tr, nil)
 	require.NoError(t, err)
 
 	feedA, err := refs.NewFeedRefFromBytes(bytes.Repeat([]byte("1312"), 8), refs.RefAlgoFeedSSB1)

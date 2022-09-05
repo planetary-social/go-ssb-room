@@ -32,7 +32,7 @@ func TestFallbackAuth(t *testing.T) {
 		r.Error(err)
 	}
 
-	db, err := Open(tr)
+	db, err := Open(tr, nil)
 	r.NoError(err, "failed to open database")
 
 	memberID, err := db.Members.Add(ctx, newMember, roomdb.RoleMember)
@@ -82,7 +82,7 @@ func TestFallbackAuthSetPassword(t *testing.T) {
 		r.Error(err)
 	}
 
-	db, err := Open(tr)
+	db, err := Open(tr, nil)
 	r.NoError(err, "failed to open database")
 
 	memberID, err := db.Members.Add(ctx, newMember, roomdb.RoleMember)
@@ -141,7 +141,7 @@ func TestFallbackAuthSetPasswordWithToken(t *testing.T) {
 		r.Error(err)
 	}
 
-	db, err := Open(tr)
+	db, err := Open(tr, nil)
 	r.NoError(err, "failed to open database")
 
 	alfID, err := db.Members.Add(ctx, alf, roomdb.RoleModerator)

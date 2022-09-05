@@ -29,7 +29,7 @@ func TestDeniedKeys(t *testing.T) {
 
 	tr := repo.New(testRepo)
 
-	db, err := Open(tr)
+	db, err := Open(tr, nil)
 	require.NoError(t, err)
 
 	tf, err := refs.NewFeedRefFromBytes(bytes.Repeat([]byte("fooo"), 8), "nope")
@@ -95,7 +95,7 @@ func TestDeniedKeysUnique(t *testing.T) {
 
 	tr := repo.New(testRepo)
 
-	db, err := Open(tr)
+	db, err := Open(tr, nil)
 	require.NoError(t, err)
 
 	feedA, err := refs.NewFeedRefFromBytes(bytes.Repeat([]byte("b33f"), 8), refs.RefAlgoFeedSSB1)
@@ -124,7 +124,7 @@ func TestDeniedKeysByID(t *testing.T) {
 
 	tr := repo.New(testRepo)
 
-	db, err := Open(tr)
+	db, err := Open(tr, nil)
 	require.NoError(t, err)
 
 	feedA, err := refs.NewFeedRefFromBytes(bytes.Repeat([]byte("b33f"), 8), refs.RefAlgoFeedSSB1)
