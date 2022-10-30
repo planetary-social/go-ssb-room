@@ -14,7 +14,6 @@ import (
 
 	"github.com/gorilla/csrf"
 	"github.com/gorilla/sessions"
-	"github.com/russross/blackfriday/v2"
 	"go.mindeco.de/http/auth"
 	"go.mindeco.de/http/render"
 	"go.mindeco.de/log/level"
@@ -311,21 +310,21 @@ func New(
 	})
 
 	// landing page
-	m.Get(router.CompleteIndex).Handler(r.HTML("landing/index.tmpl", func(w http.ResponseWriter, req *http.Request) (interface{}, error) {
-		// TODO: try websocket upgrade (issue #)
+	// m.Get(router.CompleteIndex).Handler(r.HTML("landing/index.tmpl", func(w http.ResponseWriter, req *http.Request) (interface{}, error) {
+	// 	// TODO: try websocket upgrade (issue #)
 
-		notice, err := dbs.PinnedNotices.Get(req.Context(), roomdb.NoticeDescription, "en-GB")
-		if err != nil {
-			return nil, fmt.Errorf("failed to find description: %w", err)
-		}
-		markdown := blackfriday.Run([]byte(notice.Content), blackfriday.WithNoExtensions())
-		return noticeShowData{
-			ID:       notice.ID,
-			Title:    notice.Title,
-			Content:  template.HTML(markdown),
-			Language: notice.Language,
-		}, nil
-	}))
+	// 	notice, err := dbs.PinnedNotices.Get(req.Context(), roomdb.NoticeDescription, "en-GB")
+	// 	if err != nil {
+	// 		return nil, fmt.Errorf("failed to find description: %w", err)
+	// 	}
+	// 	markdown := blackfriday.Run([]byte(notice.Content), blackfriday.WithNoExtensions())
+	// 	return noticeShowData{
+	// 		ID:       notice.ID,
+	// 		Title:    notice.Title,
+	// 		Content:  template.HTML(markdown),
+	// 		Language: notice.Language,
+	// 	}, nil
+	// }))
 
 	// notices (the mini-CMS)
 	var nh = noticeHandler{
@@ -367,6 +366,7 @@ func New(
 	m.Get(router.OpenModeCreateInvite).HandlerFunc(r.HTML("admin/invite-created.tmpl", ih.createOpenMode))
 
 	// static assets
+
 	m.PathPrefix("/assets/").Handler(http.StripPrefix("/assets/", http.FileServer(web.Assets)))
 
 	// TODO: doesnt work because of of mainMux wrapper, see issue #35
@@ -376,6 +376,12 @@ func New(
 
 	// hook up main stdlib mux to the gorrilla/mux with named routes
 	// TODO: issue #35
+
+	http.Handle("/assets/", http.StripPrefix("/assets/", http.FileServer(http.Dir("assets"))))
+
+	m.PathPrefix("/test").HandlerFunc(IndexHandler2("../../web/assets/index.html"))
+	m.PathPrefix("/").HandlerFunc(IndexHandler("../../web/assets/index.html"))
+
 	mainMux.Handle("/", m)
 
 	consumeURL := urlTo(router.CompleteInviteConsume)
@@ -425,4 +431,22 @@ func concatTemplates(lst ...[]string) []string {
 
 	}
 	return catted
+}
+
+func IndexHandler2(entrypoint string) func(w http.ResponseWriter, r *http.Request) {
+	fn := func(w http.ResponseWriter, r *http.Request) {
+		// fmt.Fprint(w, web.Assets)
+		http.ServeFile(w, r, entrypoint)
+	}
+
+	return http.HandlerFunc(fn)
+}
+
+func IndexHandler(entrypoint string) func(w http.ResponseWriter, r *http.Request) {
+	fn := func(w http.ResponseWriter, r *http.Request) {
+		// fmt.Fprint(w, web.Assets)
+		http.ServeFile(w, r, entrypoint)
+	}
+
+	return http.HandlerFunc(fn)
 }

@@ -2,7 +2,7 @@
 #
 # SPDX-License-Identifier: Unlicense
 
-node_moduels
+node_modules
 ssb-go-room-secrets
 ssb-go-room-secrets/**/*
 .git

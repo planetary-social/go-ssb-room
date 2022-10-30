@@ -344,7 +344,7 @@ func runroomsrv() error {
 
 		// See for more https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP
 		// helpful: https://report-uri.com/home/generate
-		ContentSecurityPolicy: "default-src 'self'; img-src 'self' data:", // enforce no external content
+		ContentSecurityPolicy: "default-src 'self'; img-src 'self' https://graphql.planetary.pub data: ; connect-src 'self' https://graphql.planetary.pub", // enforce no external content
 
 		BrowserXssFilter: true,
 		FrameDeny:        true,
