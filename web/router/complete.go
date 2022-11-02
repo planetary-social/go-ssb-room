@@ -6,6 +6,8 @@ package router
 
 import (
 	"github.com/gorilla/mux"
+	"github.com/ssb-ngi-pointer/go-ssb-room/v2/web"
+	"net/http"
 )
 
 // constant names for the named routes
@@ -44,8 +46,6 @@ func CompleteApp() *mux.Router {
 	Auth(m)
 	Admin(m.PathPrefix("/admin").Subrouter())
 
-	// m.Path("/").Methods("GET").Name(CompleteIndex)
-
 	m.Path("/alias/{alias}").Methods("GET").Name(CompleteAliasResolve)
 
 	m.Path("/members/change-password").Methods("GET").Name(MembersChangePasswordForm)
@@ -63,16 +63,7 @@ func CompleteApp() *mux.Router {
 	m.Path("/set-language").Methods("POST").Name(CompleteSetLanguage)
 
 	// Catch-all: Serve our JavaScript application's entry-point (index.html).
-
-	// m.PathPrefix("/assets/").Handler(http.StripPrefix("/assets/", http.FileServer(web.Assets)))
+	m.Path("/").Handler(http.FileServer(web.Assets))
 
 	return m
 }
-
-// func HealthCheck(w http.ResponseWriter, r *http.Request) {
-// 	fmt.Fprint(w, "API is alive and ready")
-// }
-
-// func handle(w http.ResponseWriter, r *http.Request) {
-// 	http.Redirect(w, r, "/notice/list", http.StatusMovedPermanently)
-// }
