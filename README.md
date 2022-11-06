@@ -7,7 +7,7 @@ SPDX-License-Identifier: CC0-1.0
 # Go-SSB Room
 [![REUSE status](https://api.reuse.software/badge/github.com/ssb-ngi-pointer/go-ssb-room)](https://api.reuse.software/info/github.com/ssb-ngi-pointer/go-ssb-room)
 
-This repository contains code for a [Secure Scuttlebutt](https://ssb.nz) [Room (v1+v2) server](https://github.com/ssb-ngi-pointer/rooms2), written in Go.
+This repository implements the [Room (v1+v2) server spec](https://github.com/ssbc/rooms2), in Go.
 
 It includes:
 * secret-handshake+boxstream network transport, sometimes referred to as SHS, using [secretstream](https://github.com/cryptoscope/secretstream)
@@ -20,12 +20,13 @@ It includes:
 
 * Rooms v1 (`tunnel.connect`, `tunnel.endpoints`, etc.)
 * User management (allow- & denylisting + moderator & administrator roles), all administered via the web dashboard
-* Multiple [privacy modes](https://ssb-ngi-pointer.github.io/rooms2/#privacy-modes)
-* [Sign-in with SSB](https://ssb-ngi-pointer.github.io/ssb-http-auth-spec/)
-* [HTTP Invites](https://github.com/ssb-ngi-pointer/ssb-http-invite-spec)
+* Multiple [privacy modes](https://ssbc.github.io/rooms2/#privacy-modes)
+* [Sign-in with SSB](https://ssbc.github.io/ssb-http-auth-spec/)
+* [HTTP Invites](https://github.com/ssbc/ssb-http-invite-spec)
 * Alias management
 
 For a comprehensive introduction to rooms 2.0, 🎥 [watch this video](https://www.youtube.com/watch?v=W5p0y_MWwDE).
+For a description of MuxRPC APIs see https://github.com/ssbc/rooms2
 
 ## :rocket: Deployment
 

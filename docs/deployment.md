@@ -113,6 +113,13 @@ When the process is complete with `certbot`, pay attention to where the certific
 in the filesystem. If it's at `/etc/letsencrypt/live/hermies.club`, it's correct, otherwise you may
 need to rename it e.g. `hermies.club-0001` to `hermies.club`. 
 
+The example nginx configuration uses prebuilt Diffie-Hellman parameters.  You can generate these
+with the following command:
+
+```
+openssl dhparam -out /etc/letsencrypt/ssl-dhparams.pem 2048
+```
+
 Then restart your server, e.g. `systemctl restart nginx`.
 
 If you see such errors as the following when setting up your deployment:
@@ -148,6 +155,13 @@ sudo ufw allow 8008/tcp
 # First Admin user
 
 To manage your now working server, you need an initial admin user. For this you can use the "insert-user" utility included with go-ssb-room.
+
+If you installed the Debian package, you will first need to install Go to build the "insert-user" utility.  You can do this via:
+
+```
+sudo apt-get install golang-go
+```
+
 In a new terminal window navigate to the insert-user utility folder and compile the GO-based utility into an executable your computer can use
 
 ```
@@ -162,6 +176,12 @@ example (with custom repo location, only needed if you setup your with a custom 
 
 ```
 ./insert-user -repo "/ssb-go-room-secrets" "@Bp5Z5TQKv6E/Y+QZn/3LiDWMPi63EP8MHsXZ4tiIb2w=.ed25519"
+```
+
+Or if you installed go-ssb-room using the Debian package:
+
+```
+sudo ./insert-user -repo "/var/lib/go-ssb-room" "@Bp5Z5TQKv6E/Y+QZn/3LiDWMPi63EP8MHsXZ4tiIb2w=.ed25519"
 ```
 
 You can now login in the web-front-end using these credentials
