@@ -20,18 +20,18 @@ import (
 	"go.mindeco.de/log/level"
 	"go.mindeco.de/logging"
 
-	"github.com/ssb-ngi-pointer/go-ssb-room/v2/internal/network"
-	"github.com/ssb-ngi-pointer/go-ssb-room/v2/internal/repo"
-	"github.com/ssb-ngi-pointer/go-ssb-room/v2/internal/signinwithssb"
-	"github.com/ssb-ngi-pointer/go-ssb-room/v2/roomdb"
-	"github.com/ssb-ngi-pointer/go-ssb-room/v2/roomstate"
-	"github.com/ssb-ngi-pointer/go-ssb-room/v2/web"
-	weberrs "github.com/ssb-ngi-pointer/go-ssb-room/v2/web/errors"
-	"github.com/ssb-ngi-pointer/go-ssb-room/v2/web/handlers/admin"
-	roomsAuth "github.com/ssb-ngi-pointer/go-ssb-room/v2/web/handlers/auth"
-	"github.com/ssb-ngi-pointer/go-ssb-room/v2/web/i18n"
-	"github.com/ssb-ngi-pointer/go-ssb-room/v2/web/members"
-	"github.com/ssb-ngi-pointer/go-ssb-room/v2/web/router"
+	"github.com/ssbc/go-ssb-room/v2/internal/network"
+	"github.com/ssbc/go-ssb-room/v2/internal/repo"
+	"github.com/ssbc/go-ssb-room/v2/internal/signinwithssb"
+	"github.com/ssbc/go-ssb-room/v2/roomdb"
+	"github.com/ssbc/go-ssb-room/v2/roomstate"
+	"github.com/ssbc/go-ssb-room/v2/web"
+	weberrs "github.com/ssbc/go-ssb-room/v2/web/errors"
+	"github.com/ssbc/go-ssb-room/v2/web/handlers/admin"
+	roomsAuth "github.com/ssbc/go-ssb-room/v2/web/handlers/auth"
+	"github.com/ssbc/go-ssb-room/v2/web/i18n"
+	"github.com/ssbc/go-ssb-room/v2/web/members"
+	"github.com/ssbc/go-ssb-room/v2/web/router"
 )
 
 var HTMLTemplates = []string{
@@ -329,12 +329,13 @@ func New(
 
 	// notices (the mini-CMS)
 	var nh = noticeHandler{
+		render:  r,
 		flashes: flashHelper,
 
 		notices: dbs.Notices,
 		pinned:  dbs.PinnedNotices,
 	}
-	m.Get(router.CompleteNoticeList).Handler(r.HTML("notice/list.tmpl", nh.list))
+	m.Get(router.CompleteNoticeList).HandlerFunc(nh.list)
 	m.Get(router.CompleteNoticeShow).Handler(r.HTML("notice/show.tmpl", nh.show))
 
 	// public aliases

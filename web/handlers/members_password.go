@@ -13,11 +13,11 @@ import (
 	hibp "github.com/mattevans/pwned-passwords"
 	"go.mindeco.de/http/render"
 
-	"github.com/ssb-ngi-pointer/go-ssb-room/v2/roomdb"
-	"github.com/ssb-ngi-pointer/go-ssb-room/v2/web"
-	weberrs "github.com/ssb-ngi-pointer/go-ssb-room/v2/web/errors"
-	"github.com/ssb-ngi-pointer/go-ssb-room/v2/web/members"
-	"github.com/ssb-ngi-pointer/go-ssb-room/v2/web/router"
+	"github.com/ssbc/go-ssb-room/v2/roomdb"
+	"github.com/ssbc/go-ssb-room/v2/web"
+	weberrs "github.com/ssbc/go-ssb-room/v2/web/errors"
+	"github.com/ssbc/go-ssb-room/v2/web/members"
+	"github.com/ssbc/go-ssb-room/v2/web/router"
 )
 
 type membersHandler struct {
@@ -46,10 +46,13 @@ func newMembersHandler(devMode bool, r *render.Renderer, urlTo web.URLMaker, fh 
 		}
 	} else {
 		// Init the have-i-been-pwned client for insecure password checks.
-		const storeExpiry = 1 * time.Hour
-		hibpClient := hibp.NewClient(storeExpiry)
+		httpClient := http.DefaultClient
+		httpClient.Timeout = 1 * time.Hour
 
-		mh.leakedLookup = hibpClient.Pwned.Compromised
+		hibpClient := hibp.NewClient()
+		hibpClient.SetHTTPClient(httpClient)
+
+		mh.leakedLookup = hibpClient.Compromised
 	}
 
 	return mh
