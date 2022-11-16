@@ -58,7 +58,8 @@ var (
 	listenAddrShsMux string
 	listenAddrHTTP   string
 
-	httpsDomain string
+	httpsDomain        string
+	externalContentSrc string
 
 	bypassInvitesToken string
 
@@ -107,6 +108,7 @@ func initFlags() {
 	flag.StringVar(&logToFile, "logs", "", "where to write debug output to (default is just stderr)")
 
 	flag.StringVar(&httpsDomain, "https-domain", "", "which domain to use for TLS and AllowedHosts checks")
+	flag.StringVar(&externalContentSrc, "external-content-src", "", "domain allowed as an external source for CSP config")
 
 	flag.StringVar(&bypassInvitesToken, "bypass-invites-token", "", "magic token which always allows the users to register")
 
@@ -155,6 +157,10 @@ func runroomsrv() error {
 			return fmt.Errorf("https-domain can't be empty. See '%s -h' for a full list of options", os.Args[0])
 		}
 		httpsDomain = "localhost"
+	}
+
+	if externalContentSrc == "" {
+		return fmt.Errorf("external-content-src can't be empty. See '%s -h' for a full list of options", os.Args[0])
 	}
 
 	// validate listen addresses to bail out on invalid flag input before doing anything else
@@ -344,7 +350,7 @@ func runroomsrv() error {
 
 		// See for more https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP
 		// helpful: https://report-uri.com/home/generate
-		ContentSecurityPolicy: "default-src 'self'; img-src 'self' https://graphql.planetary.pub data: ; connect-src 'self' https://graphql.planetary.pub", // enforce no external content
+		ContentSecurityPolicy: fmt.Sprintf("default-src 'self'; img-src 'self' %s data: ; connect-src 'self' %s", externalContentSrc, externalContentSrc),
 
 		BrowserXssFilter: true,
 		FrameDeny:        true,

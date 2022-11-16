@@ -6,7 +6,8 @@ package router
 
 import (
 	"github.com/gorilla/mux"
-	"github.com/ssb-ngi-pointer/go-ssb-room/v2/web"
+	"github.com/ssbc/go-ssb-room/v2/web"
+	// "github.com/ssb-ngi-pointer/go-ssb-room/v2/web"
 	"net/http"
 )
 
