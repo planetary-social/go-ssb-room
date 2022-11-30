@@ -201,6 +201,7 @@ AliasResolutionConnect = "Verbinde dich mit"
 SSBURIOpening = "SSB App öffnen "
 SSBURIFailureWelcome = "Bist du neu bei SSB? Es scheint, dass du noch keine kompatible SSB-App installiert hast. Du kannst eine dieser Apps installieren: "
 SSBURIFailureInstallManyverse = "Manyverse Installieren"
+SSBURIFailureInstallPlanetary = "Planetary Installieren"
 
 # notices (mini-CMS)
 ####################

@@ -1,15 +1,40 @@
-# SPDX-FileCopyrightText: 2021 The NGI Pointer Secure-Scuttlebutt Team of 2020/2021
-#
-# SPDX-License-Identifier: CC0-1.0
-
 version: '3'
 services:
   room:
     build: .
+      #image: go-ssb-room_room
+    hostname: room
+    restart: unless-stopped
     command: 'sh start.sh'
-    env_file: .env
+    env_file: env
+    expose:
+      - 3000
     ports:
-      -  "3000:3000" # Proxypass this port through NGINX or Apache as your HTTP landing & dashboard page
-      - "0.0.0.0:8008:8008" # This is the port SSB clients connect to
+      - 0.0.0.0:8008:8008
     volumes:
       - ./ssb-go-room-secrets:/ssb-go-room-secrets
+
+  nginx-proxy:
+    image: nginxproxy/nginx-proxy
+    restart: unless-stopped
+    container_name: nginx-proxy
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      #- conf:/etc/nginx/conf.d
+      - html:/usr/share/nginx/html
+      - /etc/letsencrypt/live/planetary.name/fullchain.pem:/etc/nginx/certs/planetary.name.crt:ro
+      - /etc/letsencrypt/live/planetary.name/privkey.pem:/etc/nginx/certs/planetary.name.key:ro
+      - ./vhost/planetary.name:/etc/nginx/proxy.conf
+      - /var/run/docker.sock:/tmp/docker.sock:ro
+      - /etc/letsencrypt:/etc/letsencrypt
+    environment:
+      - RESOLVERS=8.8.8.8
+
+volumes:
+  conf:
+  vhost:
+  html:
+  certs:
+  acme:

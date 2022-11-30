@@ -18,12 +18,6 @@ const anchorElem = document.getElementById('alias-uri');
 setTimeout(() => {
   const ssbUri = anchorElem.href;
   window.location.replace(ssbUri);
-}, 100);
-
-// Redirect to ssb uri or show failure state
-anchorElem.onclick = function handleURI(ev) {
-  ev.preventDefault();
-  const ssbUri = anchorElem.href;
   waitingElem.classList.remove('hidden');
   setTimeout(function () {
     if (hasFocus) {
@@ -32,4 +26,4 @@ anchorElem.onclick = function handleURI(ev) {
     }
   }, 5000);
   window.location.replace(ssbUri);
-};
+}, 100);
