@@ -26,3 +26,8 @@ dist/
 # secrets and config
 ssb-go-room-secrets/
 .env
+
+# vue frontend files
+web/app/
+
+.DS_STORE
