@@ -9,12 +9,9 @@ package web
 
 import (
 	"embed"
-	"fmt"
-	"github.com/friendsofgo/errors"
 	"io/fs"
 	"log"
 	"net/http"
-	"os"
 )
 
 // Production can be used to determain different aspects at compile time (like hot template reloading)
@@ -29,7 +26,17 @@ var (
 func init() {
 	var err error
 
-	prefixedAssets, err := newAppFS(embedAssets, embedApp)
+	prefixedEmbeddedApp, err := fs.Sub(embedApp, "app")
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	prefixedEmbeddedAssets, err := fs.Sub(embedAssets, "assets")
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	prefixedAssets, err := newAppFS(prefixedEmbeddedApp, prefixedEmbeddedAssets)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -50,36 +57,3 @@ var embedAssets embed.FS
 
 //go:embed app/*
 var embedApp embed.FS
-
-type appFS struct {
-	app    fs.FS
-	assets fs.FS
-}
-
-func newAppFS(assets embed.FS, app embed.FS) (fs.FS, error) {
-	prefixedApp, err := fs.Sub(app, "app")
-	if err != nil {
-		return nil, err
-	}
-
-	prefixedAssets, err := fs.Sub(assets, "assets")
-	if err != nil {
-		return nil, err
-	}
-
-	return &appFS{
-		app:    prefixedApp,
-		assets: prefixedAssets,
-	}, nil
-}
-
-func (a appFS) Open(name string) (fs.File, error) {
-	fmt.Println("open", name)
-	v, err := a.app.Open(name)
-	if errors.Is(err, os.ErrNotExist) {
-		fmt.Println("returning from assets", name)
-		return a.assets.Open(name)
-	}
-	fmt.Println("returning from app", name)
-	return v, err
-}
