@@ -363,7 +363,7 @@ func New(
 	m.Get(router.CompleteInviteFacadeFallback).Handler(r.HTML("invite/facade-fallback.tmpl", ih.presentFacadeFallback))
 	m.Get(router.CompleteInviteInsertID).Handler(r.HTML("invite/insert-id.tmpl", ih.presentInsert))
 	m.Get(router.CompleteInviteConsume).HandlerFunc(ih.consume)
-	m.Get(router.OpenModeCreateInvite).HandlerFunc(r.HTML("admin/invite-created.tmpl", ih.createOpenMode))
+	m.Get(router.OpenModeCreateInvite).HandlerFunc(ih.createOpenMode)
 
 	// static assets
 	m.PathPrefix("/assets/").Handler(http.StripPrefix("/assets/", http.FileServer(web.Assets)))
@@ -378,6 +378,7 @@ func New(
 	mainMux.Handle("/", m)
 
 	consumeURL := urlTo(router.CompleteInviteConsume)
+	openModeCreateInviteURL := urlTo(router.OpenModeCreateInvite)
 
 	// apply HTTP middleware
 	middlewares := []func(http.Handler) http.Handler{
@@ -390,6 +391,10 @@ func New(
 			return http.HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
 				ct := req.Header.Get("Content-Type")
 				if req.URL.Path == consumeURL.Path && ct == "application/json" {
+					next.ServeHTTP(w, csrf.UnsafeSkipCheck(req))
+					return
+				}
+				if req.URL.Path == openModeCreateInviteURL.Path && req.Header.Get("Accept") == "application/json" {
 					next.ServeHTTP(w, csrf.UnsafeSkipCheck(req))
 					return
 				}
