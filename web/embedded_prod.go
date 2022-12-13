@@ -2,6 +2,7 @@
 //
 // SPDX-License-Identifier: MIT
 
+//go:build !dev
 // +build !dev
 
 package web
@@ -25,7 +26,17 @@ var (
 func init() {
 	var err error
 
-	prefixedAssets, err := fs.Sub(embedAssets, "assets")
+	prefixedEmbeddedApp, err := fs.Sub(embedApp, "app")
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	prefixedEmbeddedAssets, err := fs.Sub(embedAssets, "assets")
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	prefixedAssets, err := newAppFS(prefixedEmbeddedApp, prefixedEmbeddedAssets)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -43,3 +54,6 @@ var embedTemplates embed.FS
 
 //go:embed assets/*
 var embedAssets embed.FS
+
+//go:embed app/*
+var embedApp embed.FS

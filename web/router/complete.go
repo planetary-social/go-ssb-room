@@ -6,11 +6,14 @@ package router
 
 import (
 	"github.com/gorilla/mux"
+	"github.com/ssbc/go-ssb-room/v2/web"
+	// "github.com/ssb-ngi-pointer/go-ssb-room/v2/web"
+	"net/http"
 )
 
 // constant names for the named routes
 const (
-	CompleteIndex = "complete:index"
+	// CompleteIndex = "complete:index"
 
 	CompleteNoticeShow = "complete:notice:show"
 	CompleteNoticeList = "complete:notice:list"
@@ -30,14 +33,19 @@ const (
 	OpenModeCreateInvite = "open:invites:create"
 )
 
+// |
+// |-dev.go
+// |-main.go
+// |-prod.go
+// |-server
+
 // CompleteApp constructs a mux.Router containing the routes for batch Complete html frontend
 func CompleteApp() *mux.Router {
 	m := mux.NewRouter()
 
+	// It's important that this is before your catch-all route ("/")
 	Auth(m)
 	Admin(m.PathPrefix("/admin").Subrouter())
-
-	m.Path("/").Methods("GET").Name(CompleteIndex)
 
 	m.Path("/alias/{alias}").Methods("GET").Name(CompleteAliasResolve)
 
@@ -54,6 +62,9 @@ func CompleteApp() *mux.Router {
 	m.Path("/notice/list").Methods("GET").Name(CompleteNoticeList)
 
 	m.Path("/set-language").Methods("POST").Name(CompleteSetLanguage)
+
+	// Catch-all: Serve our JavaScript application's entry-point (index.html).
+	m.Path("/").Handler(http.FileServer(web.Assets))
 
 	return m
 }

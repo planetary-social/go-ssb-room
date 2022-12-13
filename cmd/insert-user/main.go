@@ -32,6 +32,7 @@ func main() {
 	var (
 		role     roomdb.Role = roomdb.RoleAdmin
 		repoPath string
+		password string
 	)
 
 	flag.StringVar(&repoPath, "repo", filepath.Join(u.HomeDir, ".ssb-go-room"), "[optional] where the locally stored files of the room are located")
@@ -51,6 +52,8 @@ func main() {
 
 		return nil
 	})
+	flag.StringVar(&password, "password", "", "[optional] specify a password using -password, or be prompted to set the password instead")
+
 	flag.Parse()
 
 	if _, err := os.Stat(repoPath); err != nil {
@@ -76,17 +79,21 @@ func main() {
 	check(err)
 	defer db.Close()
 
-	fmt.Fprintln(os.Stderr, "Choose a password to be able to log into the web frontend: ")
-	bytePassword, err := terminal.ReadPassword(int(syscall.Stdin))
-	check(err)
+	bytePassword := password
 
-	fmt.Fprintln(os.Stderr, "Repeat Password: ")
-	bytePasswordRepeat, err := terminal.ReadPassword(int(syscall.Stdin))
-	check(err)
+	if bytePassword == "" {
+		fmt.Fprintln(os.Stderr, "Choose a password to be able to log into the web frontend: ")
+		bytePassword, err := terminal.ReadPassword(int(syscall.Stdin))
+		check(err)
 
-	if !bytes.Equal(bytePassword, bytePasswordRepeat) {
-		fmt.Fprintln(os.Stderr, "Passwords didn't match")
-		os.Exit(1)
+		fmt.Fprintln(os.Stderr, "Repeat Password: ")
+		bytePasswordRepeat, err := terminal.ReadPassword(int(syscall.Stdin))
+		check(err)
+
+		if !bytes.Equal(bytePassword, bytePasswordRepeat) {
+			fmt.Fprintln(os.Stderr, "Passwords didn't match")
+			os.Exit(1)
+		}
 	}
 
 	ctx := context.Background()
