@@ -24,4 +24,5 @@ RUN apk del \
       build-base \
       git
 
+RUN chmod +x ./start.sh
 CMD ./start.sh
