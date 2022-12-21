@@ -1,0 +1,38 @@
+# Creates a slimmer image than the default Dockerfile
+# that only holds what's absolutely necessary to run it.
+
+FROM golang:1.17-alpine AS build
+RUN apk add --no-cache \
+      build-base \
+      git \
+      sqlite \
+      sqlite-dev
+
+RUN mkdir /app
+WORKDIR /app
+COPY . /app
+
+RUN cd /app/cmd/server && go build && \
+    cd /app/cmd/insert-user && go build
+
+FROM alpine AS deploy
+RUN apk add --no-cache \
+      sqlite \
+      sqlite-dev
+
+RUN mkdir /app
+COPY --from=build /app/cmd /app/cmd
+COPY --from=build /app/start.sh /app/start.sh
+
+EXPOSE 8008
+EXPOSE 3000
+
+RUN chmod 777 /app/start.sh
+# TODO don't do this. chmod 777 is an anti-pattern and risky security-wise.
+# We need to create an app user and group, and then ensure the
+# docker-compose file is being run with this same group.
+# If the user is not set correctly, and start.sh is at lesser permissions,
+# then the docker file will not run.
+# This is a temporary solution to ensure our docker image can run.
+
+CMD /app/start.sh
