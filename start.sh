@@ -9,4 +9,4 @@
     -https-domain="${HTTPS_DOMAIN}" \
     -repo="${REPO:-/ssb-go-room-secrets}" \
     -aliases-as-subdomains="${ALIASES_AS_SUBDOMAINS}" \
-    -bypass-invite-token="${BYPASS_INVITE_TOKEN}"
+    -bypass-invites-token="${BYPASS_INVITES_TOKEN}"
