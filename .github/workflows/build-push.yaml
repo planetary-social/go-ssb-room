@@ -33,8 +33,8 @@ jobs:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
           # generate Docker tags based on the following events/attributes
           tags: |
-            type=raw,value=latest
-            type=sha,enable=true,prefix={{date 'YYYYMMDD'}},format=short
+            type=raw,value=stable
+            type=sha,enable=true,prefix={{date 'YYYYMMDD'}}sha-,format=short
             type=ref,event=branch
 
       - name: Build and push Docker image
