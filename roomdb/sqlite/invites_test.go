@@ -165,7 +165,10 @@ func TestInvites_BypassInvitestToken(t *testing.T) {
 	tr := repo.New(testRepo)
 
 	// fake feed for testing, looks ok at least
-	newMember := refs.FeedRef{ID: bytes.Repeat([]byte("acab"), 8), Algo: refs.RefAlgoFeedSSB1}
+	newMember, err := refs.NewFeedRefFromBytes(bytes.Repeat([]byte("acab"), 8), refs.RefAlgoFeedSSB1)
+	if err != nil {
+		t.Error(err)
+	}
 
 	token := "magic token"
 
